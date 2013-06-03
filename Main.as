@@ -1,12 +1,11 @@
-package  {
+﻿package  {
 
 	import flash.display.Sprite;
 	import flash.events.Event;
-	import flash.utils.setTimeout;
 	import com.system.Engine;
+	import com.system.Pages;
 	import com.controllers.*;
-	import com.greensock.*;
-	import com.greensock.easing.*;
+
 
 	/*
 	* Game Mode:
@@ -21,57 +20,20 @@ package  {
 	*/
 
 	public class Main extends Sprite {
-		public var pages:Object = {};
-		public var current:String = null;
 
 		public function Main() {
 			var self = this;
 
-			self.add('game', new PageGame);
+			Pages.main = this;
+			Pages.add('game', new PageGame);
+			Pages.add('intro', new PageIntro);
 
-			Engine.main = self.pages['game'];
+			Engine.main = Pages.get('game');
 			Engine.paused = false;
 
-			self.goto('game');
+			Pages.goto('intro');
 
-			self.addEventListener(Event.ENTER_FRAME, function(){ Engine.process(); self.pages['game'].process(); });
-		}
-
-		public function add(name:String, page:Sprite){
-			var container = new PageContainer;
-			container.content.addChild(page);
-			container.visible = false;
-			pages[name] = page;
-
-			addChild(container);
-		}
-
-		public function get(name:String){
-			return this.pages[name];
-		}
-
-		public function goto(name:String, direction:String = 'left'){
-			var self = this;
-			var nextPage = self.get(name).parent.parent;
-
-			if(self.current){
-				var currentPage = self.get(current).parent.parent;
-
-				if(direction === 'left'){
-					//nextPage.x = self.stage.stageWidth;
-
-					//TweenLite.to(currentPage, .6, {x: -currentPage.masker.width, ease:Expo.easeInOut});
-					//TweenLite.to(nextPage, .6, {x: 0, ease:Expo.easeInOut});
-				}else if(direction === 'right'){
-
-				}
-			}else{
-				nextPage.x = nextPage.y = 0;
-				nextPage.visible = true;
-			}
-
-			self.pages[name].reset();
-			self.current = name;
+			self.addEventListener(Event.ENTER_FRAME, function(){ Engine.process(); Engine.main.process(); });
 		}
 
 	}
