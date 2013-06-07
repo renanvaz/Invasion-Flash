@@ -13,10 +13,12 @@
 	* Itens to found: seconds (3, 5, 10), Bomb, multyply score (2X)
 	* Itens to buy: amplyfy frequency of itens,
 	* Unlock itens: Fall, bubble, airplane, hero, airplanes, stages
+	* AD icon itens: Static square image in bubble - user add points
 	*
 	* Challenge: 3 lifes
 	* Itens to found: Life, Bomb, multyply score (2X)
 	* Itens to buy:
+	* AD icon itens: Static square image in bubble - user add points
 	*/
 
 	public class Main extends Sprite {
@@ -33,7 +35,7 @@
 
 			Pages.goto('intro');
 
-			self.addEventListener(Event.ENTER_FRAME, function(){ Engine.process(); Engine.main.process(); });
+			self.addEventListener(Event.ENTER_FRAME, function(){ Engine.process(); });
 		}
 
 	}

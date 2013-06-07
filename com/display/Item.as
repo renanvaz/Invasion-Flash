@@ -5,18 +5,16 @@
 	import com.system.Utils;
 	import flash.events.MouseEvent;
 
-	public class Ete extends Sprite {
+	public class Item extends Sprite {
 		public var _mode:String;
 
 		public var bubble:Bubble;
 		public var direction:int;
-		public var color:Number;
 
 
 		public const SCORE:Object = {
 			fall: 50,
-			bubble: 20,
-			airplane: 70
+			bubble: 20
 		}
 
 		public const PHYSICS:Object = {
@@ -27,14 +25,10 @@
 			bubble: {
 				velocity: {x: 1, y: 1},
 				acceleration: {x: 0, y: 0}
-			},
-			airplane: {
-				velocity: {x: 5, y: 3},
-				acceleration: {x: .1, y: 0}
 			}
 		}
 
-		public function Ete(type:String = null, color:Number = 0) {
+		public function Item(type:String = null) {
 			this.direction = Math.random() > .5 ? 1 : -1;
 			this.scaleX = this.scaleY = .35;
 			this.scaleX *= this.direction;
@@ -44,14 +38,7 @@
 				type = rand_mode > .6 ? 'airplane': (rand_mode > .3 ? 'bubble': 'fall');
 			}
 
-			if (!color) {
-				color = Number('0x'+(Math.random() * (255 * 255 * 255)).toString(16));
-			}
-
 			this.mode = type;
-			this.color = color;
-
-			Utils.colorize(this.bodyColor, this.color);
 
 			this.addEventListener(MouseEvent.MOUSE_DOWN, function(e){
 				var self = e.currentTarget;
@@ -131,18 +118,6 @@
 						}
 						this.y = -this.height/2;
 					}
-				break;
-				case 'airplane':
-					intensity_x = intensity_x * .6 + .7;
-					intensity_y = 1;
-
-					if(this.direction === -1) {
-						this.x = sWidth + this.width/2;
-					} else {
-						this.x = -this.width/2;
-					}
-
-					this.y = Math.random() * (sHeight * .7);
 				break;
 			}
 
