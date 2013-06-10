@@ -6,10 +6,10 @@
 	public class PageBase extends Sprite {
 
 		public function PageBase() {
-			// constructor code
+			this.reset();
 		}
 
-		public function reset() {
+		public function reset(params = null) {
 
 		}
 	}

@@ -31,7 +31,6 @@
 			Pages.add('intro', new PageIntro);
 
 			Engine.main = Pages.get('game');
-			Engine.paused = false;
 
 			Pages.goto('intro');
 

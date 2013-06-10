@@ -4,15 +4,15 @@
 	import com.system.Engine;
 	import com.system.Utils;
 	import flash.events.MouseEvent;
+	import flash.display.DisplayObject;
 
 	public class Item extends Sprite {
-		public var _mode:String;
+		private var _mode:String;
 
 		public var bubble:Bubble;
 		public var direction:int;
 
-
-		public const SCORE:Object = {
+		public var SCORE:Object = {
 			fall: 50,
 			bubble: 20
 		}
@@ -28,56 +28,67 @@
 			}
 		}
 
-		public function Item(type:String = null) {
-			this.direction = Math.random() > .5 ? 1 : -1;
-			this.scaleX = this.scaleY = .35;
-			this.scaleX *= this.direction;
-
-			if (!type) {
-				var rand_mode = Math.random();
-				type = rand_mode > .6 ? 'airplane': (rand_mode > .3 ? 'bubble': 'fall');
-			}
-
-			this.mode = type;
+		public function Item(display:DisplayObject, score:int = 50) {
+			this.SCORE.fall 	= score;
+			this.direction 		= Math.random() > .5 ? 1 : -1;
+			display.scaleX 		*= this.direction;
+			this.addChild(display);
+			this.scaleX 		= this.scaleY = .35;
+			this.scaleX 		*= this.direction;
+			this.mode 			= 'bubble';
 
 			this.addEventListener(MouseEvent.MOUSE_DOWN, function(e){
 				var self = e.currentTarget;
-				var p = new Points;
-				p.x = self.x;
-				p.y = self.y;
-				p.scaleX = Math.abs(self.scaleX);
-				p.scaleY = self.scaleY;
-				p.mc.txt.text = self.SCORE[self.mode];
-				Engine.sumScore(self.SCORE[self.mode]);
+
+				self.score(self.SCORE[self.mode]);
 
 				if(self.mode === 'bubble'){
-					var b = new Bubble;
-
-					b.x = self.x;
-					b.y = self.y;
-					b.scaleX = self.scaleX;
-					b.scaleY = self.scaleY;
-					b.gotoAndPlay('explode');
-
-					Engine.main.addChild(b);
 					self.mode = 'fall';
 				} else {
-					var e = new EteExplode;
-
-					e.x = self.x;
-					e.y = self.y;
-					e.scaleX = self.scaleX;
-					e.scaleY = self.scaleY;
-
-					Utils.colorize(e.bodyColor, self.color);
-
-					Engine.main.addChild(e);
-
-					Engine.remove(self);
+					self.die();
 				}
-
-				Engine.main.addChild(p);
 			});
+
+		}
+
+		public function score(s:int = 0){
+			var p = new Points;
+			p.x = this.x;
+			p.y = this.y;
+			p.scaleY = p.scaleX = Math.abs(this.scaleX);
+			p.mc.txt.text = s;
+			Engine.score += s;
+			Engine.main.addChild(p);
+		}
+
+		public function die(){
+			if(this.bubble) {
+				this.explodeBubble();
+			}
+
+			var e = new EteExplode;
+
+			e.x = this.x;
+			e.y = this.y;
+			e.scaleX = this.scaleX;
+			e.scaleY = this.scaleY;
+
+			Utils.colorize(e.bodyColor, 0XFF2529);
+
+			this.parent.addChild(e);
+
+			Engine.remove(this);
+		}
+
+		public function explodeBubble(){
+			var b = new Bubble;
+
+			b.x = this.x;
+			b.y = this.y;
+			b.scaleX = b.scaleY = this.scaleY;
+			b.gotoAndPlay('explode');
+
+			this.parent.addChild(b);
 		}
 
 		public function set mode(v):void {
@@ -88,14 +99,13 @@
 			var sWidth = Engine.main.stage.stageWidth;
 			var sHeight = Engine.main.stage.stageHeight;
 
-			this.gotoAndPlay(v);
-
 			switch(v) {
 				case 'bubble':
 					intensity_x = intensity_x * .4 + .8;
 					intensity_y = intensity_x * .6 + .7;
 
 					this.bubble = new Bubble;
+					this.bubble.scaleX *= this.direction;
 					this.addChild(this.bubble);
 					if(this.direction === -1){
 						this.x = (rand_x * (sWidth/2 - this.width)) + this.width/2 + sWidth/2;
@@ -109,7 +119,9 @@
 					intensity_y = intensity_x + .5;
 
 					if(this.bubble) {
+						this.explodeBubble();
 						this.removeChild(this.bubble);
+						this.bubble = null;
 					} else {
 						if(this.direction === -1){
 							this.x = (rand_x * (sWidth/2 - this.width)) + this.width/2 + sWidth/2;
@@ -118,6 +130,18 @@
 						}
 						this.y = -this.height/2;
 					}
+				break;
+				case 'airplane':
+					intensity_x = intensity_x * .6 + .7;
+					intensity_y = 1;
+
+					if(this.direction === -1) {
+						this.x = sWidth + this.width/2;
+					} else {
+						this.x = -this.width/2;
+					}
+
+					this.y = Math.random() * (sHeight * .7);
 				break;
 			}
 
